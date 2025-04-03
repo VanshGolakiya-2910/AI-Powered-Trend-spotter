@@ -3,15 +3,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
-import numpy as np 
 import pandas as pd 
 import time 
 import re 
-from datetime import datetime
-
-
-
-
 
 def parse_tweet_metadata(meta_text):
 
@@ -33,9 +27,6 @@ def parse_tweet_metadata(meta_text):
     return metadata
 
 
-
-
-
 def Scrap_twitter():
     Chrome_options = Options()
     Chrome_options.add_argument("--disable-blink-features=AutomationControlled") 
@@ -48,7 +39,7 @@ def Scrap_twitter():
     driver.execute_cdp_cmd("Network.setUserAgentOverride", {
         "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
     })
-    url = 'https://x.com/search?q=(%23trending%20OR%20%23india%20OR%20%23socialmedia)%20lang%3Aen%20geocode%3A20.5937%2C78.9629%2C500km&src=typed_query'
+    url = 'https://x.com/search?q=(%23trending%20OR%20%23india%20OR%20%23socialmedia)%20lang%3Aen%20geocode%3A20.5937%2C78.9629%2C500km&src=typed_query&f=live'
 
     wait = WebDriverWait(driver,30)
 
@@ -81,7 +72,7 @@ def Scrap_twitter():
             except Exception as e:
                 print("Error fetching Tweets : ",e)
 
-        if (i * 1) >= 5:
+        if (i * 1) >= 150:
             print('------------------- Data Scraped Successfully --------------------')
             return Titles_list,Meta_data_list,Date_time_list
              
@@ -115,8 +106,9 @@ df = pd.DataFrame({
     'Hastags':hast_list_str
 })
 
-print(df.head())
 print(df.info())
+df.to_csv("Scrapers/Data/Data.csv",index=False)
+print('---------------Data saved Succesfully-----------------')
 
 
 
