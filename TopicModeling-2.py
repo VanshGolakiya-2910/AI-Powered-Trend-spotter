@@ -30,7 +30,7 @@ redis_connect = redis.Redis(
 
 
 
-custom_stop_words = ['trend', 'viral', 'trending', 'india', 'post', 'news', 'update','trendingnow','trendingreels','latest','relatable','viralvideo','reel','fyp','us','know','series','business', 'digital', 'online', 'growth', 'market','better', 'things', 'best', 'one', 'zoomed cleavage']
+custom_stop_words = ['trend', 'viral', 'trending', 'india', 'post', 'news', 'update','trendingnow','trendingreels','latest','relatable','viralvideo','reel','fyp','us','know','series','business', 'digital', 'online', 'growth', 'market','better', 'things', 'best', 'one', 'zoomed cleavage','youtube', 'written', 'april 2025', '2025 written', 'written episode','github repo', 'github', 'repo', 'web', 'framework','daily', 'like', 'time', 'anna']
 
 additional_noise_words = [
 'look', 'take', 'make', 'get', 'see', 'check', 'click', 'life', 'love',

@@ -6,6 +6,14 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd 
 import time 
 import re 
+import json 
+import redis 
+
+redis_client = redis.Redis(
+    host="localhost",
+    port = 6379,
+    db = 0,  
+)
 
 def parse_tweet_metadata(meta_text):
 
@@ -41,7 +49,7 @@ def Scrap_twitter():
     })
     url = 'https://x.com/search?q=(%23trending%20OR%20%20%23socialmedia)%20lang%3Aen%20geocode%3A20.5937%2C78.9629%2C500km&src=typed_query&f=live'
 
-    wait = WebDriverWait(driver,30)
+    wait = WebDriverWait(driver,5)
 
     driver.get(url)
     i = 1 
@@ -56,6 +64,7 @@ def Scrap_twitter():
 
         Full_Tweet_element = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//article[@role='article']")))
         for tweet in Full_Tweet_element:
+            print(f'----------- For {i} iteration -------------')
             try: 
                 tweet_text_element = tweet.find_element(By.XPATH,".//div[@data-testid='tweetText']")
                 if tweet_text_element.text.strip() in Titles_list:
@@ -77,12 +86,10 @@ def Scrap_twitter():
                     'Likes':Meta_info['likes'],
                     'Views' : Meta_info['views']
                 })
-
-                print(f'----------- For {i} iteration -------------')
             except Exception as e:
                 print("Error fetching Tweets : ",e)
 
-        if (i * 1) >= 1000:
+        if (i * 1) >= 450:
             print('------------------- Data Scraped Successfully --------------------')
             return Titles_list,Meta_data_list,Date_time_list
              
@@ -117,6 +124,12 @@ df['Hastags'] = [", ".join(re.findall(r'#\w+', tweet)) for tweet in df['Tweets']
 print(df.info())
 df.to_csv("Scrapers/Data/Data.csv",index=False)
 print('---------------Data saved Succesfully-----------------')
+data_json = df.to_json(orient='records')
+redis_client.lpush("Twitter_data",data_json)
+redis_client.ltrim("Twitter_data",0,4)
+print('---------------Data Storage to redis Succesfully-----------------')
+
+
 
 
 
