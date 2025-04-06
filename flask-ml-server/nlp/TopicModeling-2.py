@@ -17,6 +17,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 import redis
 import json
 from datetime import datetime
+from urllib.parse import quote_plus
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 
 # Connection work for redis server 
@@ -199,7 +202,6 @@ def Create_Data_Visulization(df, topic_model):
     return pd.DataFrame(trends)
 
 if __name__ == '__main__':
-    
     df = pd.read_csv('Scrapers/Data/Data.csv')
     df['Keywords'] = df['Tweets'].apply(nlp_processing)
           
@@ -225,8 +227,8 @@ if __name__ == '__main__':
     topic_info = topic_model.get_topic_info()
     clean_topic_keywords(topic_model, set(custom_stop_words))
     print('------------------printing specific keywords that are trending---------------')
-    for i in topic_model.get_topic(0):
-        print(i)
+    # for i in topic_model.get_topic(0):
+    #     print(i)
     print('---------------------------------------------------------------------')
 
     print('---------------------Performing sentiment analysis------------------')
@@ -238,31 +240,49 @@ if __name__ == '__main__':
     visual_df = Create_Data_Visulization(df,topic_model)
     visual_df.to_csv('Scrapers/Data/Visual_Analysis.csv')
 
+    username = quote_plus('DhairyaVaghela')
+    password = quote_plus('xYQtoQ1yaYTiBJO2')
+    uri = f"mongodb+srv://{username}:{password}@ai-powered-trend-cluste.ja1xbvz.mongodb.net/?retryWrites=true&w=majority&appName=AI-Powered-Trend-Cluster"
 
-from pymongo import MongoClient
-from datetime import datetime
-from dotenv import load_dotenv
-import os
+    client = MongoClient(uri, server_api=ServerApi('1'))
 
-# Load environment variables
-load_dotenv()
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+        db = client['trendspotter']
+        collection = db['Current_Trend']
+        new_trend = visual_df.to_dict(orient="records")
+        for trend in new_trend:
+            trend["timestamp"] = datetime.utcnow()
+        collection.insert_many(new_trend)
+        print('Data stored Sucessfully')
+    except Exception as e:
+        print(e)
 
-# Get the MongoDB URI from the .env file
-mongo_uri = os.getenv("MONGO_URI")
+# from pymongo import MongoClient
+# from datetime import datetime
+# from dotenv import load_dotenv
+# import os
 
-# Connect to MongoDB Atlas
-client = MongoClient(mongo_uri)
+# # Load environment variables
+# load_dotenv()
 
-# Access database and collection
-db = client["trend_db"]  # Or whatever name you want
-trends_collection = db["current_trends"]
+# # Get the MongoDB URI from the .env file
+# mongo_uri = os.getenv("MONGO_URI")
 
-# Convert DataFrame to records and insert with timestamps
-new_trends = visual_df.to_dict(orient="records")
-for trend in new_trends:
-    trend["timestamp"] = datetime.utcnow()
+# # Connect to MongoDB Atlas
+# client = MongoClient(mongo_uri)
 
-trends_collection.insert_many(new_trends)
+# # Access database and collection
+# db = client["trend_db"]  # Or whatever name you want
+# trends_collection = db["current_trends"]
+
+# # Convert DataFrame to records and insert with timestamps
+# new_trends = visual_df.to_dict(orient="records")
+# for trend in new_trends:
+#     trend["timestamp"] = datetime.utcnow()
+
+# trends_collection.insert_many(new_trends)
 
 
     # storing all the created data to Redis 

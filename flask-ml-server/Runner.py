@@ -10,8 +10,8 @@ def run_script(path):
 
 if __name__ =='__main__':
     scripts = [
-        "scraper/Scraper_1.py",
-        "nlp/TopicModeling-2.py"
+        "flask-ml-server/scraper/Scraper_1.py",
+        "flask-ml-server/nlp/TopicModeling-2.py"
     ]
 
     for script in scripts:

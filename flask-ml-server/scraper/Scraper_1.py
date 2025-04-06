@@ -9,11 +9,11 @@ import re
 import json 
 import redis 
 
-redis_client = redis.Redis(
-    host="localhost",
-    port = 6379,
-    db = 0,  
-)
+# redis_client = redis.Redis(
+#     host="localhost",
+#     port = 6379,
+#     db = 0,  
+# )
 
 def parse_tweet_metadata(meta_text):
 
@@ -89,7 +89,7 @@ def Scrap_twitter():
             except Exception as e:
                 print("Error fetching Tweets : ",e)
 
-        if (i * 1) >= 450:
+        if (i * 1) >= 10:
             print('------------------- Data Scraped Successfully --------------------')
             return Titles_list,Meta_data_list,Date_time_list
              
@@ -125,8 +125,8 @@ print(df.info())
 df.to_csv("Scrapers/Data/Data.csv",index=False)
 print('---------------Data saved Succesfully-----------------')
 data_json = df.to_json(orient='records')
-redis_client.lpush("Twitter_data",data_json)
-redis_client.ltrim("Twitter_data",0,4)
+# redis_client.lpush("Twitter_data",data_json)
+# redis_client.ltrim("Twitter_data",0,4)
 print('---------------Data Storage to redis Succesfully-----------------')
 
 
