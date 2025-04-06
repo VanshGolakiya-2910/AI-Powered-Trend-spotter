@@ -4,13 +4,6 @@
   A smart website that detects <strong>current trending topics</strong> and predicts <strong>future trends</strong> using AI.<br />
   Classifies hashtags & topics to determine whether they'll trend in the <strong>next hour</strong>.
 </p>
-
-<p align="center">
-  <img src="https://img.shields.io/github/stars/VanshGolakiya-2910/AI-Powered-Trend-Spotter?style=social" />
-  <img src="https://img.shields.io/github/forks/VanshGolakiya-2910/AI-Powered-Trend-Spotter?style=social" />
-  <img src="https://img.shields.io/github/license/VanshGolakiya-2910/AI-Powered-Trend-Spotter" />
-</p>
-
 ---
 
 ## ✨ Features
@@ -34,8 +27,31 @@
 - 🧪 **Scraping:** Selenium (Twitter Scraper)
 - 📈 **Visualization:** Recharts, D3.js
 
-## 📄 WorkFLow 
-1. Scrapes data from twitter every hour
-2. process all the data (performs sentiment analysis,topic modeling,generating short desc)
-3. after processing we have our current trend data sents it to front end
-4. start processing other part of data for future prediction and trains the model 
+## 📄 Workflow
+
+Here's how the AI-Powered Trend Spotter system operates behind the scenes:
+
+1. 🕒 **Hourly Twitter Scraping**
+   - A **Selenium-based crawler** runs every hour to fetch fresh tweets.
+   - Targets trending hashtags, keywords, and user discussions.
+
+2. 🧼 **Data Preprocessing & Enrichment**
+   - Cleans raw tweet text (removes URLs, emojis, special characters).
+   - Applies **custom NLP pipeline** to:
+     - Perform **Sentiment Analysis** using pre-trained models.
+     - Extract **topics and clusters** using **BERTopic**.
+     - Generate a **brief description** for each trending topic.
+
+3. 📊 **Current Trends Processing**
+   - Processes enriched data to identify **currently trending topics**.
+   - Sends this real-time trend data to the **frontend dashboard** via MongoDB.
+
+4. 🔮 **Future Trend Prediction**
+   - The system isolates relevant features (e.g., engagement, sentiment, frequency).
+   - Uses a **trained machine learning model** to **predict if a topic will trend in the next hour**.
+   - Stores future trend predictions in **Redis** for faster retrieval and display.
+
+---
+
+✨ The combination of **real-time scraping**, **advanced NLP**, and **predictive analytics** makes this system a powerful tool for tracking and forecasting social media trends.
+
