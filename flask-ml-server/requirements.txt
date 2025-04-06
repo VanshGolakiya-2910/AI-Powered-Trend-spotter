@@ -1,0 +1,12 @@
+flask
+requests
+beautifulsoup4
+pandas
+scikit-learn
+nltk
+spacy
+gensim
+flask-cors
+redis
+selenium
+bertopic
