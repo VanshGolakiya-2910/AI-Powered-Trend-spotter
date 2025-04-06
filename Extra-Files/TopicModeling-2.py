@@ -255,11 +255,9 @@ if __name__ == '__main__':
     """
     # storing all the created data to Redis 
 
-    # data_json = df.to_json(orient='records')
-    # redis_connect.lpush('Future_trends_list', data_json)  
-    # redis_connect.ltrim('Future_trends_list', 0, 2)  
-    # print('----------Data Successfully stored on Redis server---------')
+    data_json = df.to_json(orient='records')
+    redis_connect.lpush('Future_trends_list', data_json)  
+    redis_connect.ltrim('Future_trends_list', 0, 2)  
+    print('----------Data Successfully stored on Redis server---------')
 
-
-    
     

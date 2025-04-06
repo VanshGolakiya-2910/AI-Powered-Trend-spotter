@@ -19,7 +19,7 @@ def home():
 def run_scripts():
     try:
         import os
-        runner_path = os.path.join(os.path.dirname(__file__), 'runner.py')
+        runner_path = os.path.join(os.path.dirname(__file__), 'Runner.py')
         result = subprocess.run(['python', runner_path], capture_output=True, text=True)
         
         response = {

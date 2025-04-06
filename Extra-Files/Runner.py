@@ -9,6 +9,7 @@ def run_script(path):
 
 
 if __name__ =='__main__':
+    print("Running Outside")
     scripts = [
         "Scrapers/Scraper_1.py",
         "TopicModeling-2.py"
