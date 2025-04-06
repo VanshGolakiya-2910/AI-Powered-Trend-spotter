@@ -1,0 +1,170 @@
+.dashboard-container {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    min-height: 100vh;
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+  }
+  
+  .fade-in {
+    opacity: 1;
+    animation: fadeIn 0.8s ease forwards;
+  }
+  
+  .list-group-item {
+    border-radius: 0.3rem;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, transform 0.2s ease;
+  }
+  
+  input.form-control,
+  select.form-select {
+    border-radius: 0.5rem;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  
+  input.form-control:focus,
+  select.form-select:focus {
+    transform: scale(1.02);
+  }
+  
+  .list-group-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transform: translateX(5px);
+  }
+  
+  /* Expand/Collapse Animation */
+  .expandable-section {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    padding: 0 1rem;
+    background-color: #f1f1f1;
+    font-size: 0.95rem;
+    transition: all 0.4s ease;
+    border-left: 4px solid #ddd;
+    margin-bottom: 10px;
+  }
+  
+  .expandable-section.expanded {
+    max-height: 300px;
+    opacity: 1;
+    padding: 1rem;
+  }
+  
+  /* New animations */
+  .title-animation {
+    animation: slideDown 0.6s ease-out forwards;
+  }
+  
+  .controls-animation {
+    animation: fadeInUp 0.7s ease-out forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+  }
+  
+  .list-animation {
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+  }
+  
+  .button-animation {
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+  
+  .button-animation:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .button-animation:active {
+    transform: translateY(0);
+  }
+  
+  .input-animation, .select-animation {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  .error-animation {
+    animation: shake 0.5s ease forwards;
+  }
+  
+  .loading-animation {
+    animation: pulse 1.5s infinite;
+  }
+  
+  .no-trends-animation {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  .header-animation {
+    animation: slideInRight 0.5s ease forwards;
+  }
+  
+  .item-row-animation {
+    transition: all 0.3s ease;
+  }
+  
+  /* List item animation */
+  .list-item-animation {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  .list-item-animation.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Keyframe animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }

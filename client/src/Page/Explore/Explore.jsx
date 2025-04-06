@@ -43,7 +43,7 @@ function Explore() {
 
   if (loading) {
     return (
-      <div>
+      <div style={gradientStyle}>
         <Navbar />
         <h2 className="text-center mt-5">Loading trends...</h2>
       </div>
@@ -52,7 +52,7 @@ function Explore() {
 
   if (trends.length === 0) {
     return (
-      <div>
+      <div style={gradientStyle}>
         <Navbar />
         <h2 className="text-center mt-5">No trends available.</h2>
       </div>
@@ -82,89 +82,92 @@ function Explore() {
   const maxVolume = Math.max(...trends.map((trend) => trend.volume));
   const wordCloudData = trends.map((trend) => ({
     text: trend.trend_name,
-    value: (trend.volume / maxVolume) * 100, // normalize to 0–100 scale
+    value: (trend.volume / maxVolume) * 100,
   }));
 
   const fontSizeMapper = (word) => {
     const size = Math.log2(word.value) * 5;
-    return Math.max(10, Math.min(size, 60)); // clamp between 10–60
+    return Math.max(10, Math.min(size, 60));
   };
 
   const rotate = () => (Math.random() > 0.5 ? 0 : 90);
 
   return (
-    <div>
+    <div style={gradientStyle}>
       <Navbar />
-      <h2 className="text-center my-5 text-2xl font-bold">
-        Explore Trend Data
-      </h2>
+      <div className="container py-5">
+        <h2 className="text-center mb-5 fw-bold">Explore Trend Data</h2>
 
-      {/* Bar Chart */}
-      <h5 className="text-center mt-4 mb-2 font-semibold text-lg">
-        Trend Volume Comparison
-      </h5>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={volumeData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey="name"
-            angle={-45}
-            textAnchor="end"
-            interval={0}
-            height={80}
-          />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="volume" fill="#8884d8" />
-        </BarChart>
-      </ResponsiveContainer>
-
-      {/* Pie Chart */}
-      <h5 className="text-center mt-10 mb-2 font-semibold text-lg">
-        Sentiment Distribution
-      </h5>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={sentimentData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            label
-          >
-            {sentimentData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={sentimentColorMap[entry.name] || "#8884d8"}
+        {/* Bar Chart */}
+        <h5 className="text-center mt-4 mb-3 fw-semibold">Trend Volume Comparison</h5>
+        <div className="mx-auto" style={{ width: "85%", height: "500px" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={volumeData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="name"
+                angle={-45}
+                textAnchor="end"
+                interval={0}
+                height={80}
               />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="volume" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* Word Cloud */}
-      <h5 className="text-center mt-10 mb-3 font-semibold text-lg mt-4">
-        Explore Trends
-      </h5>
-      <div style={{ width: "100%", height: "400px", overflow: "hidden" }}>
-        <WordCloud
-          data={wordCloudData}
-          fontSizeMapper={fontSizeMapper}
-          rotate={rotate}
-          width={window.innerWidth * 0.9}
-          height={400}
-        />
+        {/* Pie Chart */}
+        <h5 className="text-center mt-5 mb-3 fw-semibold">Sentiment Distribution</h5>
+        <div className="mx-auto" style={{ width: "85%", height: "400px" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={sentimentData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {sentimentData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={sentimentColorMap[entry.name] || "#8884d8"}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Word Cloud */}
+        <h5 className="text-center mt-5 mb-3 fw-semibold">Explore Trends</h5>
+        <div className="mx-auto" style={{ width: "90%", height: "400px", overflow: "hidden" }}>
+          <WordCloud
+            data={wordCloudData}
+            fontSizeMapper={fontSizeMapper}
+            rotate={rotate}
+            width={window.innerWidth * 0.9}
+            height={400}
+          />
+        </div>
       </div>
     </div>
   );
 }
+
+const gradientStyle = {
+  background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+  minHeight: "100vh",
+};
 
 export default Explore;

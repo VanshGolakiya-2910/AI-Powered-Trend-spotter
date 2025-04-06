@@ -9,10 +9,7 @@ const STATUS = {
   SERVER_ERROR: 500,
 };
 
-// Helper: Validate ObjectId
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
-
-// 1. GET all trends
 exports.getAllTrends = async (req, res) => {
   try {
     const trends = await Trend.find().sort({ volume: -1 });
@@ -22,7 +19,7 @@ exports.getAllTrends = async (req, res) => {
   }
 };
 
-// 2. GET trend by ID
+//  GET trend by ID
 exports.getTrendById = async (req, res) => {
   const { id } = req.params;
 
@@ -41,7 +38,7 @@ exports.getTrendById = async (req, res) => {
   }
 };
 
-// 3. POST new trend
+// POST new trend
 exports.createTrend = async (req, res) => {
   try {
     const newTrend = new Trend(req.body);
@@ -52,7 +49,7 @@ exports.createTrend = async (req, res) => {
   }
 };
 
-// 4. DELETE trend by ID
+// DELETE trend by ID
 exports.deleteTrend = async (req, res) => {
   const { id } = req.params;
 
@@ -71,7 +68,7 @@ exports.deleteTrend = async (req, res) => {
   }
 };
 
-// 5. PUT (Update) trend by ID
+// PUT (Update) trend by ID
 exports.updateTrend = async (req, res) => {
   const { id } = req.params;
 
@@ -90,7 +87,7 @@ exports.updateTrend = async (req, res) => {
   }
 };
 
-// 6. GET trends by sentiment (Positive, Negative, Neutral)
+// GET trends by sentiment (Positive, Negative, Neutral)
 exports.getTrendsBySentiment = async (req, res) => {
   const sentiment = req.params.sentiment;
 
@@ -106,7 +103,7 @@ exports.getTrendsBySentiment = async (req, res) => {
   }
 };
 
-// 7. GET top N trends by volume
+// GET top N trends by volume
 exports.getTopTrendsByVolume = async (req, res) => {
   const count = parseInt(req.params.count);
 
@@ -122,7 +119,7 @@ exports.getTopTrendsByVolume = async (req, res) => {
   }
 };
 
-// 8. SEARCH trends by keyword (in trend_name or top_keywords)
+// SEARCH trends by keyword (in trend_name or top_keywords)
 exports.searchTrendsByKeyword = async (req, res) => {
   const keyword = req.query.keyword;
 

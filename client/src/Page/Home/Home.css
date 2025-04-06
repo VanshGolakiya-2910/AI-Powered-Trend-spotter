@@ -2,4 +2,18 @@
   height: 90vh;
   background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
   color: #333;
+  opacity: 0;
+  animation: fadeIn 1.2s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
