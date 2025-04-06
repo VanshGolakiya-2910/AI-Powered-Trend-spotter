@@ -13,17 +13,17 @@
 - 🔄 **Real-time-ish** – Pulls fresh data every hour (due to API limitations)
 - 💪 **Robust System** – Handles a wide range of social media text data
 - 📊 **Interactive Dashboard** – Clean, intuitive UI to browse trends
-- 👨‍💻 **Sentiment-Analysis** - also analysis public opinion on the trending topics
+- 👨‍💻 **Sentiment-Analysis** - also analyzes public opinion on the trending topics
 - 🧠 **Trend Desciption** - with the help of **Generative AI** can generate short brief of trends 
-- ⏰ **Future-Prediction** - Currently under work but soon will be done
+- ⏰ **Future-Prediction** - Currently under work, but soon will be done
 ---
 
 ## 🧠 Tech Stack
 
-- 🧩 **Frontend:** React, Tailwind CSS, Chart.js
-- 🚀 **Backend:** Flask 
+- 🧩 **Frontend:** React, Bootstrap, Rechart, React-d3-cloud
+- 🚀 **Backend:** Flask, Node JS, Express 
 - 🧠 **AI/NLP:** BERTopic, Sentence Transformers (`all-MiniLM-L6-v2`)
-- 🗄 **Database:** MongoDB, Redis
+- 🗄 **Database:** MongoDB atlas, Redis
 - 🧪 **Scraping:** Selenium (Twitter Scraper)
 - 📈 **Visualization:** Recharts, D3.js
 
