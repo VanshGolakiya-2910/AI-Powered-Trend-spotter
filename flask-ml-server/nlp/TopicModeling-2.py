@@ -20,16 +20,18 @@ from datetime import datetime
 from urllib.parse import quote_plus
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import google.generativeai as genai
+import time 
 
 
 # Connection work for redis server 
 
-# redis_connect = redis.Redis(
-#     host='localhost',
-#     port=6379,
-#     db=0,
-#     decode_responses=True
-# )
+redis_connect = redis.Redis(
+    host='localhost',
+    port=6379,
+    db=0,
+    decode_responses=True
+)
 
 
 
@@ -45,6 +47,26 @@ additional_noise_words = [
 
 
 custom_stop_words += additional_noise_words
+
+
+def Generate_description(visual_df):
+    genai.configure(api_key="AIzaSyDV1WIQR-aQotA2Fxxn-mVnu4VDF11vesw")
+    model = genai.GenerativeModel('gemini-1.5-flash')
+
+    descriptions = []
+    for index, row in visual_df.iterrows():
+        prompt = f"Write a short and catchy description about a trend named '{row['trend_name']}', which includes keywords: {', '.join(row['top_keywords'])}, has a {row['sentiment']} sentiment, and is currently popular on social media."
+        
+        try:
+            response = model.generate_content(prompt)
+            descriptions.append(response.text.strip())
+        except Exception as e:
+            print(f"Error for index {index}: {e}")
+            descriptions.append("Description generation failed.")
+
+    visual_df["trend_description"] = descriptions
+    return visual_df
+
 
 def split_concatenated_tokens(tokens):
     split_tokens = []
@@ -201,6 +223,9 @@ def Create_Data_Visulization(df, topic_model):
 
     return pd.DataFrame(trends)
 
+
+
+
 if __name__ == '__main__':
     df = pd.read_csv('Scrapers/Data/Data.csv')
     df['Keywords'] = df['Tweets'].apply(nlp_processing)
@@ -227,19 +252,22 @@ if __name__ == '__main__':
     topic_info = topic_model.get_topic_info()
     clean_topic_keywords(topic_model, set(custom_stop_words))
     print('------------------printing specific keywords that are trending---------------')
-    # for i in topic_model.get_topic(0):
-    #     print(i)
+
     print('---------------------------------------------------------------------')
 
     print('---------------------Performing sentiment analysis------------------')
     df['Sentiment_score'] = df['Tweets'].apply(Sentiment_analysis)
     df['Sentiment_label'] = df['Sentiment_score'].apply(label_sentiment)
-    print('------------Sentiment Analysis done successfully----------------------')
 
+    print('------------Sentiment Analysis done successfully----------------------')
     df.to_csv('Scrapers/Data/Future_analysis.csv')
     visual_df = Create_Data_Visulization(df,topic_model)
-    visual_df.to_csv('Scrapers/Data/Visual_Analysis.csv')
 
+    print('------------Generating Short description---------------')
+    visual_df = Generate_description(visual_df)
+    print('------------Generated Short description---------------')
+    print(visual_df.info())
+    visual_df.to_csv('Scrapers/Data/Visual_Analysis.csv')
     username = quote_plus('DhairyaVaghela')
     password = quote_plus('xYQtoQ1yaYTiBJO2')
     uri = f"mongodb+srv://{username}:{password}@ai-powered-trend-cluste.ja1xbvz.mongodb.net/?retryWrites=true&w=majority&appName=AI-Powered-Trend-Cluster"
@@ -252,6 +280,7 @@ if __name__ == '__main__':
         db = client['trendspotter']
         collection = db['Current_Trend']
         new_trend = visual_df.to_dict(orient="records")
+        print(new_trend)
         for trend in new_trend:
             trend["timestamp"] = datetime.utcnow()
         collection.insert_many(new_trend)
@@ -259,38 +288,12 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
 
-# from pymongo import MongoClient
-# from datetime import datetime
-# from dotenv import load_dotenv
-# import os
-
-# # Load environment variables
-# load_dotenv()
-
-# # Get the MongoDB URI from the .env file
-# mongo_uri = os.getenv("MONGO_URI")
-
-# # Connect to MongoDB Atlas
-# client = MongoClient(mongo_uri)
-
-# # Access database and collection
-# db = client["trend_db"]  # Or whatever name you want
-# trends_collection = db["current_trends"]
-
-# # Convert DataFrame to records and insert with timestamps
-# new_trends = visual_df.to_dict(orient="records")
-# for trend in new_trends:
-#     trend["timestamp"] = datetime.utcnow()
-
-# trends_collection.insert_many(new_trends)
-
-
     # storing all the created data to Redis 
 
-    # data_json = df.to_json(orient='records')
-    # redis_connect.lpush('Future_trends_list', data_json)  
-    # redis_connect.ltrim('Future_trends_list', 0, 2)  
-    # print('----------Data Successfully stored on Redis server---------')
+    data_json = df.to_json(orient='records')
+    redis_connect.lpush('Future_trends_list', data_json)  
+    redis_connect.ltrim('Future_trends_list', 0, 2)  
+    print('----------Data Successfully stored on Redis server---------')
 
 
     

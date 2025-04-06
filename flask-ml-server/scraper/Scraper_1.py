@@ -89,7 +89,7 @@ def Scrap_twitter():
             except Exception as e:
                 print("Error fetching Tweets : ",e)
 
-        if (i * 1) >= 10:
+        if (i * 1) >= 400:
             print('------------------- Data Scraped Successfully --------------------')
             return Titles_list,Meta_data_list,Date_time_list
              
