@@ -1,6 +1,8 @@
 """Here we will be implementing Bertopic for getting more precised meaning for the text """
-
+from collections import Counter
 import re 
+import os
+import sys
 from bertopic import BERTopic 
 from sentence_transformers import SentenceTransformer
 import pandas as pd 
@@ -23,7 +25,8 @@ from pymongo.server_api import ServerApi
 import google.generativeai as genai
 import time 
 
-
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(BASE_DIR)
 # Connection work for redis server 
 
 redis_connect = redis.Redis(
@@ -33,9 +36,8 @@ redis_connect = redis.Redis(
     decode_responses=True
 )
 
+custom_stop_words = ['trend', 'viral', 'trending', 'post', 'news', 'update','trendingnow','trendingreels','latest','relatable','viralvideo','reel','fyp','us','know','series','business', 'digital', 'online', 'growth', 'market','better', 'things', 'best', 'one', 'zoomed cleavage','youtube', 'written', 'april 2025', '2025 written', 'written episode','github repo', 'github', 'repo', 'web', 'framework','daily', 'like', 'time', 'anna']
 
-
-custom_stop_words = ['trend', 'viral', 'trending', 'india', 'post', 'news', 'update','trendingnow','trendingreels','latest','relatable','viralvideo','reel','fyp','us','know','series','business', 'digital', 'online', 'growth', 'market','better', 'things', 'best', 'one', 'zoomed cleavage','youtube', 'written', 'april 2025', '2025 written', 'written episode','github repo', 'github', 'repo', 'web', 'framework','daily', 'like', 'time', 'anna']
 
 additional_noise_words = [
 'look', 'take', 'make', 'get', 'see', 'check', 'click', 'life', 'love',
@@ -46,8 +48,14 @@ additional_noise_words = [
 ]
 
 
-custom_stop_words += additional_noise_words
+custom_stop_words += additional_noise_words 
 
+# Function helps clearing the stop words and noise in the data 
+def find_frequent_useless_keywords(topic_model, threshold=0.6):
+    topic_words = [word for topic_id in topic_model.get_topics().keys() if topic_id != -1 for word, _ in topic_model.get_topic(topic_id)]
+    counts = Counter(topic_words)
+    total_topics = len(topic_model.get_topics()) - 1  # excluding -1
+    return [word for word, freq in counts.items() if freq / total_topics >= threshold]
 
 def Generate_description(visual_df):
     genai.configure(api_key="AIzaSyDV1WIQR-aQotA2Fxxn-mVnu4VDF11vesw")
@@ -55,9 +63,10 @@ def Generate_description(visual_df):
 
     descriptions = []
     for index, row in visual_df.iterrows():
-        prompt = f"Write a short and catchy description about a trend named '{row['trend_name']}', which includes keywords: {', '.join(row['top_keywords'])}, has a {row['sentiment']} sentiment, and is currently popular on social media."
-        
+        prompt = f"Write a short, catchy, and meaningful description for a current social media trend called {row['trend_name']}. The trend has a {row['sentiment']} sentiment and is currently popular online. Base the description on the following top keywords: {', '.join(row['top_keywords'])}. Make sure the description feels natural, engaging, and summarizes the core theme of the trend in 1-2 sentences. Also, include relevant hashtags at the end."
+        print(index)
         try:
+            time.sleep(5)
             response = model.generate_content(prompt)
             descriptions.append(response.text.strip())
         except Exception as e:
@@ -164,8 +173,7 @@ def label_sentiment(score):
         return "Neutral"
     
 
-def Create_Data_Visulization(df, topic_model):
-    embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+def Create_Data_Visulization(df, topic_model,embedding_model):
     grouped = df.groupby('topics')
     trends = []
 
@@ -175,24 +183,19 @@ def Create_Data_Visulization(df, topic_model):
 
         volume = len(group)
 
-        # Top keywords
         keywords = [word for word, _ in topic_model.get_topic(topic_id)[:5]]
         trend_name = " ".join(keywords[:2]).title()
 
-        # Sentiment majority
         sentiment_counts = group['Sentiment_label'].value_counts()
         sentiment = sentiment_counts.idxmax()
 
-        # Collect all hashtags from this topic's tweets
         hashtags_in_topic = []
         for tweet in group['Tweets']:
             hashtags = re.findall(r"#\w+", tweet)
             hashtags_in_topic.extend(hashtags)
 
-        # Remove duplicates, lowercase
         hashtags_in_topic = list(set([tag.lower() for tag in hashtags_in_topic]))
 
-        # Semantic filtering
         if hashtags_in_topic:
             cleaned_hashtags = [tag.strip('#') for tag in hashtags_in_topic]
 
@@ -224,50 +227,73 @@ def Create_Data_Visulization(df, topic_model):
     return pd.DataFrame(trends)
 
 
-
-
 if __name__ == '__main__':
-    df = pd.read_csv('Scrapers/Data/Data.csv')
+
+    start_time = datetime.now()
+    # Loading the Data from redis 
+    print('-------------Fetching data from Redis server-----------')
+    json_data = redis_connect.lrange(name='Scraped_data',start=0,end=-1)
+    data = []
+    for i, item in enumerate(json_data):
+        try:
+            parsed = json.loads(item)
+            if isinstance(parsed, list):
+                data.extend(parsed)
+            elif isinstance(parsed, dict):
+                data.append(parsed)
+        except Exception as e:
+            print(e)
+    df = pd.DataFrame(data)
+
+    df.to_csv('try.csv')
     df['Keywords'] = df['Tweets'].apply(nlp_processing)
-          
+
+    # Creating a CountVectorizer instance
     vector_model = CountVectorizer(
         stop_words=custom_stop_words,
-        ngram_range=(1,2)
+        ngram_range=(1,2),
+        max_df = 0.85
         )
 
     embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
     tweets = df['Keywords'].apply(lambda tokens:' '.join(tokens))
 
+    # Creating a BERTopic model
     topic_model = BERTopic(
     embedding_model=embedding_model,
     vectorizer_model= vector_model
     )
-    
+
+    # fitting the Model 
     topics , probs = topic_model.fit_transform(tweets)
     topic_model.update_topics(tweets, topics, vectorizer_model=vector_model)
     df['topics'] = topics
 
-    
-    print('------------------label modeling completed succesfully---------------')
+
+    print('------------label modeling completed succesfully---------------')
     topic_info = topic_model.get_topic_info()
     clean_topic_keywords(topic_model, set(custom_stop_words))
-    print('------------------printing specific keywords that are trending---------------')
-
+    print('------------printing specific keywords that are trending---------------')
     print('---------------------------------------------------------------------')
 
-    print('---------------------Performing sentiment analysis------------------')
+    # Sentiment Analysis 
+    print('------------Performing sentiment analysis---------------')
     df['Sentiment_score'] = df['Tweets'].apply(Sentiment_analysis)
     df['Sentiment_label'] = df['Sentiment_score'].apply(label_sentiment)
+    print('------------Sentiment Analysis Completed---------------')
 
-    print('------------Sentiment Analysis done successfully----------------------')
-    df.to_csv('Scrapers/Data/Future_analysis.csv')
-    visual_df = Create_Data_Visulization(df,topic_model)
 
+    # Creating Visualiztion Data
+    # visual_df = Create_Data_Visulization(df,topic_model,embedding_model)
+
+    # # Generating short description 
     print('------------Generating Short description---------------')
     visual_df = Generate_description(visual_df)
     print('------------Generated Short description---------------')
-    print(visual_df.info())
-    visual_df.to_csv('Scrapers/Data/Visual_Analysis.csv')
+    visual_df.to_csv('Scrapers/Data/Visual_Analysis2.csv')
+
+
+    # Code for connecting to Mongodb 
     username = quote_plus('DhairyaVaghela')
     password = quote_plus('xYQtoQ1yaYTiBJO2')
     uri = f"mongodb+srv://{username}:{password}@ai-powered-trend-cluste.ja1xbvz.mongodb.net/?retryWrites=true&w=majority&appName=AI-Powered-Trend-Cluster"
@@ -280,7 +306,6 @@ if __name__ == '__main__':
         db = client['trendspotter']
         collection = db['Current_Trend']
         new_trend = visual_df.to_dict(orient="records")
-        print(new_trend)
         for trend in new_trend:
             trend["timestamp"] = datetime.utcnow()
         collection.insert_many(new_trend)
@@ -291,10 +316,12 @@ if __name__ == '__main__':
     # storing all the created data to Redis 
 
     data_json = df.to_json(orient='records')
-    redis_connect.lpush('Future_trends_list', data_json)  
-    redis_connect.ltrim('Future_trends_list', 0, 2)  
+    for data in df.to_dict(orient='records'):
+        redis_connect.lpush('Future_prediction_data', json.dumps(data)) 
+    
     print('----------Data Successfully stored on Redis server---------')
-
+    end_time = datetime.now()
+    print(f'time taken to run the script {end_time-start_time}')
 
     
     

@@ -8,12 +8,29 @@ import time
 import re 
 import json 
 import redis 
+import datetime as datetime 
 
-# redis_client = redis.Redis(
-#     host="localhost",
-#     port = 6379,
-#     db = 0,  
-# )
+redis_client = redis.Redis(
+    host="localhost",
+    port = 6379,
+    db = 0,  
+)
+
+ad_keywords = [
+    "buy now", "discount", "offer", "sale", "limited time", "sponsored", "promo code",
+    "check out our", "subscribe", "free trial", "download", "product", "service", 
+    "boost your", "marketing", "click here", "visit our website", "ebook", "ad",
+    'buy', 'shop', 'offer', 'deal', 'discount', 'exclusive', 
+    'check out', 'sale', 'new edition', 'limited time', 'boost productivity','build', 'success', 'together', 'build trust', 'change','digital','marketing','paint', 'paint pictureperfect', 'far', 'far reality', 'pictureperfect'
+]
+
+def Ad_filter(text):
+    tweet = text.lower()
+    if any(word in tweet for word in ad_keywords):
+        return True 
+    if 'http' in tweet or 'bit.ly' in tweet:
+        return True 
+    return False
 
 def parse_tweet_metadata(meta_text):
 
@@ -52,12 +69,15 @@ def Scrap_twitter():
     wait = WebDriverWait(driver,5)
 
     driver.get(url)
-    i = 1 
+    i = 0 
+    desired_tweet_count = 250
+    non_add_tweet = 0 
+    max_scroll = 300 
     screen_height = driver.execute_script('return window.screen.height')
     Titles_list = []
     Meta_data_list = []
     Date_time_list = []
-    while True: 
+    while non_add_tweet < desired_tweet_count and i < max_scroll: 
         driver.execute_script(f"window.scrollTo(0,{screen_height}*{i})".format(screen_height=screen_height,i=i))
         i = i + 1 
         time.sleep(1)
@@ -86,10 +106,11 @@ def Scrap_twitter():
                     'Likes':Meta_info['likes'],
                     'Views' : Meta_info['views']
                 })
+                non_add_tweet = non_add_tweet + 1 
             except Exception as e:
                 print("Error fetching Tweets : ",e)
 
-        if (i * 1) >= 400:
+        if non_add_tweet >= desired_tweet_count:
             print('------------------- Data Scraped Successfully --------------------')
             return Titles_list,Meta_data_list,Date_time_list
              
@@ -97,37 +118,46 @@ def Scrap_twitter():
 
 
 def Hastag_fetcher(Title):
+
     Hastag_list = []
     for text in Title:
         x = re.findall('#\w+',text)
         Hastag_list.append(x)
     return Hastag_list
 
-Title,Meta_data,Date_array = Scrap_twitter()
+if __name__ == '__main__':
+    start_time = datetime.datetime.now()
+
+    Title,Meta_data,Date_array = Scrap_twitter()
 
 
-# Hash_list = Hastag_fetcher(Title)
+    # Hash_list = Hastag_fetcher(Title)
 
-# likes = [meta.get('likes', 0) for meta in Meta_data]
-# views = [meta.get('views', 0) for meta in Meta_data]
-# print(f'Length of HasTag array :{len(Hash_list)}')
-
-
-print(f'Length of Tweets array : {len(Title)}')
-print(f'Length of Meta Data array : {len(Meta_data)}')
-print(f'Length of Date time array : {len(Date_array)}')
-
-df = pd.DataFrame(Title)
-df['Hastags'] = [", ".join(re.findall(r'#\w+', tweet)) for tweet in df['Tweets']]
+    # likes = [meta.get('likes', 0) for meta in Meta_data]
+    # views = [meta.get('views', 0) for meta in Meta_data]
+    # print(f'Length of HasTag array :{len(Hash_list)}')
 
 
-print(df.info())
-df.to_csv("Scrapers/Data/Data.csv",index=False)
-print('---------------Data saved Succesfully-----------------')
-data_json = df.to_json(orient='records')
-# redis_client.lpush("Twitter_data",data_json)
-# redis_client.ltrim("Twitter_data",0,4)
-print('---------------Data Storage to redis Succesfully-----------------')
+    print(f'Length of Tweets array : {len(Title)}')
+    print(f'Length of Meta Data array : {len(Meta_data)}')
+    print(f'Length of Date time array : {len(Date_array)}')
+
+    df = pd.DataFrame(Title)
+    df['Hastags'] = [", ".join(re.findall(r'#\w+', tweet)) for tweet in df['Tweets']]
+
+
+    print(df.info())
+    # df.to_csv("Scrapers/Data/Data2.csv",index=False)
+
+    print('---------------Data saved Succesfully-----------------')
+    data_json = df.to_json(orient='records')
+    for row in df.to_dict(orient='records'):
+        redis_client.lpush("Scraped_data",json.dumps(row))
+
+    print('---------------Data Storage to redis Succesfully-----------------')
+
+    end_time = datetime.datetime.now()
+    print(f'the time taken to run the script {(end_time-start_time)}')
 
 
 
