@@ -44,7 +44,7 @@ additional_noise_words = [
 'watch', 'share', 'amazing', 'awesome', 'today', 'new', 'now', 'live',
 'happening', 'go', 'back', 'day', 'night', 'people', 'thing', 'stuff',
 'guy', 'girl', 'video', 'photo', 'pic', 'story', 'view', 'upload',
-'reels', 'videos', 'likes', 'followers', 'insta', 'snap', 'bio', 'caption','vs','funny','comedy','please','let','details link', 'subscribe', 'via youtube', 'via', 'like subscribe','social', 'media', 'social media', 'brand','read', 'comment', 'tip', 'work', 'need upon','tweeting daily', 'tweeting', 'untill', 'daily untill', 'reply','engagement', 'marketing', 'platforms', 'strategies', 'content','grow','seo', 'strategy', 'engage','instagram'
+'reels', 'videos', 'likes', 'followers', 'insta', 'snap', 'bio', 'caption','vs','funny','comedy','please','let','details link', 'subscribe', 'via youtube', 'via', 'like subscribe','social', 'media', 'social media', 'brand','read', 'comment', 'tip', 'work', 'need upon','tweeting daily', 'tweeting', 'untill', 'daily untill', 'reply','engagement', 'marketing', 'platforms', 'strategies', 'content','grow','seo', 'strategy', 'engage','instagram','2025', 'april', 'th', 'india', 'build',
 ]
 
 
@@ -284,7 +284,7 @@ if __name__ == '__main__':
 
 
     # Creating Visualiztion Data
-    # visual_df = Create_Data_Visulization(df,topic_model,embedding_model)
+    visual_df = Create_Data_Visulization(df,topic_model,embedding_model)
 
     # # Generating short description 
     print('------------Generating Short description---------------')

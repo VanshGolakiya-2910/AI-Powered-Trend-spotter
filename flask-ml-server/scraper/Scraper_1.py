@@ -21,7 +21,7 @@ ad_keywords = [
     "check out our", "subscribe", "free trial", "download", "product", "service", 
     "boost your", "marketing", "click here", "visit our website", "ebook", "ad",
     'buy', 'shop', 'offer', 'deal', 'discount', 'exclusive', 
-    'check out', 'sale', 'new edition', 'limited time', 'boost productivity','build', 'success', 'together', 'build trust', 'change','digital','marketing','paint', 'paint pictureperfect', 'far', 'far reality', 'pictureperfect'
+    'check out', 'sale', 'new edition', 'limited time', 'boost productivity','build', 'success', 'together', 'build trust', 'change','digital','marketing','paint', 'paint pictureperfect', 'far', 'far reality', 'pictureperfect','youtube','build','command'
 ]
 
 def Ad_filter(text):
@@ -70,9 +70,9 @@ def Scrap_twitter():
 
     driver.get(url)
     i = 0 
-    desired_tweet_count = 250
+    desired_tweet_count = 200
     non_add_tweet = 0 
-    max_scroll = 300 
+    max_scroll = 400 
     screen_height = driver.execute_script('return window.screen.height')
     Titles_list = []
     Meta_data_list = []
@@ -91,6 +91,9 @@ def Scrap_twitter():
                     continue
                 tweet_text = tweet_text_element.text.strip()
                 if tweet_text in [t["Tweets"] for t in Titles_list]:
+                    continue
+
+                if Ad_filter(tweet_text):
                     continue
 
                 tweet_date_element = tweet.find_element(By.XPATH,".//time").get_attribute('datetime')
