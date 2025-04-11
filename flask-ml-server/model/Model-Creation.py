@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import classification_report , confusion_matrix
+import joblib
 
 def Retrive_data_from_redis(redis_client):
 
@@ -100,14 +101,24 @@ if __name__ == '__main__':
     X_test_scaled = scaler.transform(X_test)
 
     Model = RandomForestClassifier(
-        n_estimators=100,
+        n_estimators=100
+        # max_depth=30,
+        # min_samples_leaf=4,
     )
 
     Model.fit(X_train_scaled,Y_train)
 
     Y_preds = Model.predict(X_test_scaled)
-
+    print("Sample predictions:", Y_preds[:10])
+    testing_df = [df['trend_name'][idx] for idx in X_test.index]
     print(classification_report(Y_test,Y_preds))
+    results = list(zip(testing_df, Y_preds))
+    trending = [trend[0] for trend in results if trend[1] == 1]
+    filtered = [t for t in trending if t != 'Misc']
+    joblib.dump(Model,"flask-ml-server/Future-model.pkl")
+    top_trends = Counter(filtered).most_common(5)
+    print(top_trends)
+
 
 
 

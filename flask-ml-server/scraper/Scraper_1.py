@@ -70,9 +70,9 @@ def Scrap_twitter():
 
     driver.get(url)
     i = 0 
-    desired_tweet_count = 200
+    desired_tweet_count = 50
     non_add_tweet = 0 
-    max_scroll = 400 
+    max_scroll = 250 
     screen_height = driver.execute_script('return window.screen.height')
     Titles_list = []
     Meta_data_list = []
@@ -85,6 +85,7 @@ def Scrap_twitter():
         Full_Tweet_element = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//article[@role='article']")))
         for tweet in Full_Tweet_element:
             print(f'----------- For {i} iteration -------------')
+            driver.execute_script(f"console.log('{i} iteration');")
             try: 
                 tweet_text_element = tweet.find_element(By.XPATH,".//div[@data-testid='tweetText']")
                 if tweet_text_element.text.strip() in Titles_list:
@@ -116,6 +117,8 @@ def Scrap_twitter():
         if non_add_tweet >= desired_tweet_count:
             print('------------------- Data Scraped Successfully --------------------')
             return Titles_list,Meta_data_list,Date_time_list
+        
+    return Titles_list,Meta_data_list,Date_time_list
              
 
 

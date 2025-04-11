@@ -22,6 +22,7 @@ from datetime import datetime
 from urllib.parse import quote_plus
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from pymongo.errors import DuplicateKeyError
 import google.generativeai as genai
 import time 
 
@@ -44,7 +45,7 @@ additional_noise_words = [
 'watch', 'share', 'amazing', 'awesome', 'today', 'new', 'now', 'live',
 'happening', 'go', 'back', 'day', 'night', 'people', 'thing', 'stuff',
 'guy', 'girl', 'video', 'photo', 'pic', 'story', 'view', 'upload',
-'reels', 'videos', 'likes', 'followers', 'insta', 'snap', 'bio', 'caption','vs','funny','comedy','please','let','details link', 'subscribe', 'via youtube', 'via', 'like subscribe','social', 'media', 'social media', 'brand','read', 'comment', 'tip', 'work', 'need upon','tweeting daily', 'tweeting', 'untill', 'daily untill', 'reply','engagement', 'marketing', 'platforms', 'strategies', 'content','grow','seo', 'strategy', 'engage','instagram','2025', 'april', 'th', 'india', 'build',
+'reels', 'videos', 'likes', 'followers', 'insta', 'snap', 'bio', 'caption','vs','funny','comedy','please','let','details link', 'subscribe', 'via youtube', 'via', 'like subscribe','social', 'media', 'social media', 'brand','read', 'comment', 'tip', 'work', 'need upon','tweeting daily', 'tweeting', 'untill', 'daily untill', 'reply','engagement', 'marketing', 'platforms', 'strategies', 'content','grow','seo', 'strategy', 'engage','instagram','2025', 'april', 'th', 'build','way', 'inspiration', 'art', 'ho',
 ]
 
 
@@ -63,7 +64,7 @@ def Generate_description(visual_df):
 
     descriptions = []
     for index, row in visual_df.iterrows():
-        prompt = f"Write a short, catchy, and meaningful description for a current social media trend called {row['trend_name']}. The trend has a {row['sentiment']} sentiment and is currently popular online. Base the description on the following top keywords: {', '.join(row['top_keywords'])}. Make sure the description feels natural, engaging, and summarizes the core theme of the trend in 1-2 sentences. Also, include relevant hashtags at the end."
+        prompt = f"Write a short, catchy, and meaningful description for a current social media trend called {row['trend_name']}. The trend has a {row['sentiment']} sentiment and is currently popular online. use the following top keywords: {', '.join(row['top_keywords'])} and make it more meaningful also take help from internet. Make sure the description feels natural, engaging, and summarizes the core theme of the trend in 1-2 sentences. Also, include relevant hashtags at the end."
         print(index)
         try:
             time.sleep(5)
@@ -245,7 +246,6 @@ if __name__ == '__main__':
             print(e)
     df = pd.DataFrame(data)
 
-    df.to_csv('try.csv')
     df['Keywords'] = df['Tweets'].apply(nlp_processing)
 
     # Creating a CountVectorizer instance
@@ -292,8 +292,7 @@ if __name__ == '__main__':
     print('------------Generated Short description---------------')
     visual_df.to_csv('Scrapers/Data/Visual_Analysis2.csv')
 
-
-    # Code for connecting to Mongodb 
+    # Code for connecting to MongoDB 
     username = quote_plus('DhairyaVaghela')
     password = quote_plus('xYQtoQ1yaYTiBJO2')
     uri = f"mongodb+srv://{username}:{password}@ai-powered-trend-cluste.ja1xbvz.mongodb.net/?retryWrites=true&w=majority&appName=AI-Powered-Trend-Cluster"
@@ -303,16 +302,26 @@ if __name__ == '__main__':
     try:
         client.admin.command('ping')
         print("Pinged your deployment. You successfully connected to MongoDB!")
+
         db = client['trendspotter']
         collection = db['Current_Trend']
+
+        collection.create_index("Tweets", unique=True)
+
         new_trend = visual_df.to_dict(orient="records")
+
         for trend in new_trend:
             trend["timestamp"] = datetime.utcnow()
-        collection.insert_many(new_trend)
-        print('Data stored Sucessfully')
+            try:
+                collection.insert_one(trend)
+            except DuplicateKeyError:
+                continue  # Skip duplicates
+
+        print('Data stored Successfully')
+
     except Exception as e:
         print(e)
-
+        
     # storing all the created data to Redis 
 
     data_json = df.to_json(orient='records')
@@ -322,6 +331,7 @@ if __name__ == '__main__':
     print('----------Data Successfully stored on Redis server---------')
     end_time = datetime.now()
     print(f'time taken to run the script {end_time-start_time}')
+    df.to_csv('try.csv')
 
     
     
