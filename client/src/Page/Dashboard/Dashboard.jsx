@@ -171,7 +171,7 @@ function Dashboard() {
                 >
                   <p>
                     <strong>Description:</strong>{" "}
-                    {trend.description || "No description available."}
+                    {trend.trend_description || "No description available."}
                   </p>
                   <p>
                     <strong>All Keywords:</strong>{" "}

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../Components/Navbar/Navbar";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -59,7 +59,7 @@ function Explore() {
     );
   }
 
-  // Bar Chart Data
+  // Line Chart Data
   const volumeData = trends.map((trend) => ({
     name: trend.trend_name,
     volume: trend.volume,
@@ -86,8 +86,8 @@ function Explore() {
   }));
 
   const fontSizeMapper = (word) => {
-    const size = Math.log2(word.value) * 5;
-    return Math.max(10, Math.min(size, 60));
+    const size = Math.log10(word.value) *100;
+    return Math.max(40, Math.min(size, 120)); // Increased size
   };
 
   const rotate = () => (Math.random() > 0.5 ? 0 : 90);
@@ -98,32 +98,38 @@ function Explore() {
       <div className="container py-5">
         <h2 className="text-center mb-5 fw-bold">Explore Trend Data</h2>
 
-        {/* Bar Chart */}
-        <h5 className="text-center mt-4 mb-3 fw-semibold">Trend Volume Comparison</h5>
+        {/* Line Chart */}
+        <h5 className="text-center mt-4 mb-3 fw-semibold">
+          Trend Volume Over Time
+        </h5>
         <div className="mx-auto" style={{ width: "85%", height: "500px" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
+            <LineChart
               data={volumeData}
               margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="name"
-                angle={-45}
-                textAnchor="end"
-                interval={0}
-                height={80}
-              />
+              <XAxis dataKey="name" interval={0} hide={false} tick={false} />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                formatter={(value) => [`${value} mentions`, "Volume"]}
+                labelFormatter={(label) => `Trend: ${label}`}
+              />
               <Legend />
-              <Bar dataKey="volume" fill="#8884d8" />
-            </BarChart>
+              <Line
+                type="monotone"
+                dataKey="volume"
+                stroke="#003f5c" // Darker color
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 
         {/* Pie Chart */}
-        <h5 className="text-center mt-5 mb-3 fw-semibold">Sentiment Distribution</h5>
+        <h5 className="text-center mt-5 mb-3 fw-semibold">
+          Sentiment Distribution
+        </h5>
         <div className="mx-auto" style={{ width: "85%", height: "400px" }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -151,7 +157,10 @@ function Explore() {
 
         {/* Word Cloud */}
         <h5 className="text-center mt-5 mb-3 fw-semibold">Explore Trends</h5>
-        <div className="mx-auto" style={{ width: "90%", height: "400px", overflow: "hidden" }}>
+        <div
+          className="mx-auto"
+          style={{ width: "90%", height: "400px", overflow: "hidden" }}
+        >
           <WordCloud
             data={wordCloudData}
             fontSizeMapper={fontSizeMapper}

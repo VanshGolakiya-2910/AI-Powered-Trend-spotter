@@ -20,17 +20,61 @@
   select.form-select {
     border-radius: 0.5rem;
     transition: box-shadow 0.3s ease, transform 0.2s ease;
+    border: 1px solid #e0e0e0;
   }
   
   input.form-control:focus,
   select.form-select:focus {
     transform: scale(1.02);
+    box-shadow: 0 0 0 0.15rem rgba(168, 237, 234, 0.25);
+    border-color: #a8edea;
   }
   
   .list-group-item:hover {
     background-color: #f8f9fa;
     cursor: pointer;
     transform: translateX(5px);
+  }
+  
+  /* Button styles */
+  .btn {
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-primary {
+    background-color: #7bb5b3;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #69a09e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-success {
+    background-color: #b3a6cd;
+    color: white;
+  }
+  
+  .btn-success:hover {
+    background-color: #a293bc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-secondary {
+    background-color: #d4a5bd;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #c594ad;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
   /* Expand/Collapse Animation */
@@ -168,3 +212,5 @@
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
     20%, 40%, 60%, 80% { transform: translateX(5px); }
   }
+
+  

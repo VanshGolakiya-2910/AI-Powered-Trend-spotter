@@ -1,0 +1,40 @@
+/* TrendSpotter Custom CSS - only includes styles not available in Bootstrap */
+
+.trend-spotter {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  min-height: 100vh; /* Ensures it takes full viewport height */
+}
+
+  
+  /* Active nav item styling */
+  .active-nav-item {
+    background-color: #4361ee;
+  }
+  
+  .sidebar .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  /* Icon circles */
+  .icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Search bar with no outline when focused */
+  .search-container input:focus {
+    box-shadow: none;
+  }
+  
+  /* Responsive fixes */
+  @media (max-width: 992px) {
+    .sidebar {
+      position: static !important;
+      height: auto !important;
+    }
+  }
