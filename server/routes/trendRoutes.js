@@ -14,4 +14,6 @@ router.get('/:id', trendController.getTrendById);
 router.put('/:id', trendController.updateTrend);
 router.delete('/:id', trendController.deleteTrend);
 
+// delete trend by ID
+router.delete('/delete/:id', trendController.deleteTrend);
 module.exports = router;

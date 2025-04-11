@@ -10,4 +10,4 @@ const trendSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // 👇 Force model to use the "current_trend" collection
-module.exports = mongoose.model('Trend', trendSchema);
+module.exports = mongoose.model('Trend', trendSchema , "Current_Trend"); // "current_trend" is the name of the collection in MongoDB

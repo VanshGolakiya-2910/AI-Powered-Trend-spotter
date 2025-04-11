@@ -139,3 +139,22 @@ exports.searchTrendsByKeyword = async (req, res) => {
     return res.status(STATUS.SERVER_ERROR).json({ error: err.message });
   }
 };
+
+// DELETE trend by ID
+exports.deleteTrend = async (req, res) => {
+  const { id } = req.params;
+
+  if (!isValidId(id)) {
+    return res.status(STATUS.BAD_REQUEST).json({ error: 'Invalid Trend ID' });
+  }
+
+  try {
+    const result = await Trend.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(STATUS.NOT_FOUND).json({ error: 'Trend not found' });
+    }
+    return res.status(STATUS.OK).json({ message: 'Trend deleted successfully' });
+  } catch (err) {
+    return res.status(STATUS.SERVER_ERROR).json({ error: err.message });
+  }
+};
