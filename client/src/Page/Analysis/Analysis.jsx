@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios"; // Importing axios
-import "./Analysis.css"; // We'll keep only custom styles that Bootstrap doesn't provide
+import axios from "axios"; 
+import "./Analysis.css";
 import Navbar from "../../Components/Navbar/Navbar";
-import "@fortawesome/fontawesome-free/css/all.min.css"; // Importing the Navbar component
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import TrendLineChart from "../../Components/Charts/TrendLineChart";
 import SentimentPieChart from "../../Components/Charts/SentimentPieChart";
-import TrendWordCloud from "../../Components/Charts/TrendWordCloud"; // adjust path if needed
+import TrendWordCloud from "../../Components/Charts/TrendWordCloud"; 
 function Analysis() {
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,11 +61,29 @@ function Analysis() {
   }, []);
 
   // --- Handle search bar filtering
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setTrends(allTrends);
-    } else {
-      const filtered = allTrends.filter((trend) => {
+  const getFilteredTrends = () => {
+    let result = [...allTrends];
+  
+    // Apply time filter
+    if (timeFilter === "latest") {
+      const latestTimestamp = result.reduce((latest, trend) => {
+        const date = new Date(trend.timestamp);
+        return !latest || date > latest ? date : latest;
+      }, null);
+      result = result.filter(
+        (trend) =>
+          new Date(trend.timestamp).toDateString() ===
+          latestTimestamp?.toDateString()
+      );
+    } else if (timeFilter === "last7days") {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      result = result.filter((trend) => new Date(trend.timestamp) >= weekAgo);
+    }
+  
+    // Apply search filter
+    if (searchTerm.trim()) {
+      result = result.filter((trend) => {
         const name = trend.trend_name?.toLowerCase() || "";
         const keywords = parseKeywords(trend.top_keywords)
           .join(" ")
@@ -75,30 +93,11 @@ function Analysis() {
           keywords.includes(searchTerm.toLowerCase())
         );
       });
-      setTrends(filtered);
     }
-  }, [searchTerm, allTrends]);
-
-  // --- Apply time filter to trends (Latest or Last 7 Days)
-  const getFilteredTrends = () => {
-    if (timeFilter === "latest") {
-      const latestTimestamp = allTrends.reduce((latest, trend) => {
-        const date = new Date(trend.timestamp);
-        return !latest || date > latest ? date : latest;
-      }, null);
-      return allTrends.filter(
-        (trend) =>
-          new Date(trend.timestamp).toDateString() ===
-          latestTimestamp?.toDateString()
-      );
-    } else if (timeFilter === "last7days") {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return allTrends.filter((trend) => new Date(trend.timestamp) >= weekAgo);
-    }
-    return allTrends;
+  
+    return result;
   };
-
+  
   const filteredTrends = getFilteredTrends();
 
   // --- Analytics using filtered data
@@ -249,12 +248,12 @@ function Analysis() {
           </div>
 
           {/* Main Content */}
-          <div className="col-lg-10 bg-light p-4">
+          <div className="col-lg-10 p-4">
             {/* Header */}
             <header className="mb-4">
               <div className="d-flex justify-content-between align-items-center">
                 <div
-                  className="search-container bg-white rounded shadow-sm d-flex align-items-center py-2 px-3"
+                  className="search-container bg-white rounded back-shadow d-flex align-items-center py-2 px-3"
                   style={{ width: "400px" }}
                 >
                   <i className="fas fa-search text-secondary me-2"></i>
@@ -272,7 +271,7 @@ function Analysis() {
             {/* Dashboard Cards */}
             <div className="row mb-4" ref={dashboardRef}>
               <div className="col-xl-3 col-md-6 mb-3">
-                <div className="card border-0 shadow-sm h-100">
+                <div className="card border-0 back-shadow h-100">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <span className="text-secondary fw-semibold">
@@ -293,7 +292,7 @@ function Analysis() {
               </div>
 
               <div className="col-xl-3 col-md-6 mb-3">
-                <div className="card border-0 shadow-sm h-100">
+                <div className="card border-0 back-shadow h-100">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <span className="text-secondary fw-semibold">
@@ -314,7 +313,7 @@ function Analysis() {
               </div>
 
               <div className="col-xl-3 col-md-6 mb-3">
-                <div className="card border-0 shadow-sm h-100">
+                <div className="card border-0 back-shadow h-100">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <span className="text-secondary fw-semibold">
@@ -333,7 +332,7 @@ function Analysis() {
               </div>
 
               <div className="col-xl-3 col-md-6 mb-3">
-                <div className="card border-0 shadow-sm h-100">
+                <div className="card border-0 back-shadow h-100">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                       <span className="text-secondary fw-semibold">
@@ -357,7 +356,7 @@ function Analysis() {
             {/* Main Sections */}
             <div className="row mb-4" ref={topTrendsRef}>
               <div className="col-lg-8 mb-4">
-                <div className="card border-0 shadow-sm h-100">
+                <div className="card border-0 back-shadow h-100">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <h5 className="card-title fw-semibold">Trend Analysis</h5>
@@ -387,7 +386,7 @@ function Analysis() {
                       </div>
                     </div>
                     <div className="bg-light rounded p-4 text-center text-secondary mb-4">
-                      <TrendLineChart trends={trends}></TrendLineChart>
+                      <TrendLineChart trends={filteredTrends}></TrendLineChart>
                     </div>
                     <di
                       v
@@ -453,7 +452,7 @@ function Analysis() {
               </div>
 
               <div className="col-lg-4 mb-4" ref={sentimentRef}>
-                <div className="card border-0 shadow-sm h-100">
+                <div className="card border-0 back-shadow h-100">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <h5 className="card-title fw-semibold">
@@ -464,7 +463,7 @@ function Analysis() {
                       className="bg-light rounded p-4 text-center text-secondary mb-4"
                       style={{ height: "200px" }}
                     >
-                      <SentimentPieChart data={trends} />
+                      <SentimentPieChart data={filteredTrends} />
                     </div>
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <h5 className="card-title fw-semibold">
@@ -472,7 +471,7 @@ function Analysis() {
                       </h5>
                     </div>
                     <div className="bg-light rounded p-4 text-center text-secondary">
-                      <TrendWordCloud trends={trends} />
+                      <TrendWordCloud trends={filteredTrends} />
                     </div>
                   </div>
                 </div>
@@ -482,23 +481,20 @@ function Analysis() {
             {/* Keywords Section */}
             <div className="row" ref={keywordsRef}>
               <div className="col-12">
-                <div className="card border-0 shadow-sm">
+                <div className="card border-0 back-shadow">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <h5 className="card-title fw-semibold">
                         Tracked Keywords & Hashtags
                       </h5>
                       <div>
-                        <button className="btn btn-primary">
-                          <i className="fas fa-chart-line me-1"></i> Compare
-                        </button>
                       </div>
                     </div>
 
                     <div className="row">
                       {topKeywords.map(([keyword, data], index) => (
                         <div className="col-lg-4 col-md-6 mb-3" key={index}>
-                          <div className="card shadow-sm">
+                          <div className="card">
                             <div className="card-body p-3">
                               <div className="d-flex justify-content-between align-items-center mb-2">
                                 <span className="fw-semibold">#{keyword}</span>
@@ -507,7 +503,7 @@ function Analysis() {
                                 </span>
                               </div>
                               <div
-                                className="bg-light rounded p-2 mt-2"
+                                className="desc-color rounded p-2 mt-2"
                                 style={{
                                   height: "80px",
                                   overflow: "hidden",

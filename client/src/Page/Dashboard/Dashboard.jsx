@@ -90,8 +90,18 @@ function Dashboard() {
     fetchAllTrends();
   }, []);
 
+  // Group trends by date and sort each group by volume
+  const groupedByDate = trends.reduce((acc, trend) => {
+    const dateStr = new Date(trend.timestamp).toLocaleDateString();
+    if (!acc[dateStr]) acc[dateStr] = [];
+    acc[dateStr].push(trend);
+    return acc;
+  }, {});
+
+  const sortedDateKeys = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
+
   return (
-    <div className={`dashboard-container ${fadeIn ? 'fade-in' : ''}`}>
+    <div className={`dashboard-container ${fadeIn ? "fade-in" : ""}`}>
       <Navbar />
       <div className="container py-4">
         <h1 className="text-center mb-4 text-dark fw-bold title-animation">
@@ -141,45 +151,55 @@ function Dashboard() {
           <p className="text-center no-trends-animation">No trends available.</p>
         ) : (
           <div className="list-group list-animation">
-            <div className="list-group-item bg-dark text-white fw-bold d-flex justify-content-between text-uppercase header-animation">
-              <span style={{ flex: 2 }}>Trend Name</span>
-              <span style={{ flex: 1 }}>Sentiment</span>
-              <span style={{ flex: 1 }}>Volume</span>
-              <span style={{ flex: 3 }}>Top Keywords</span>
-            </div>
+            {sortedDateKeys.map((date, idx) => {
+              const trendsForDate = groupedByDate[date].sort((a, b) => b.volume - a.volume);
+              return (
+                <div key={idx}>
+                  <h5 className="bg-light p-2 mb-2 mt-4 border fw-semibold rounded shadow-sm">
+                    {date}
+                  </h5>
+                  <div className="list-group-item bg-dark text-white fw-bold d-flex justify-content-between text-uppercase header-animation">
+                    <span style={{ flex: 2 }}>Trend Name</span>
+                    <span style={{ flex: 1 }}>Sentiment</span>
+                    <span style={{ flex: 1 }}>Volume</span>
+                    <span style={{ flex: 3 }}>Top Keywords</span>
+                  </div>
 
-            {trends.map((trend, index) => (
-              <div 
-                key={trend._id} 
-                className={`list-item-animation ${animateItems ? 'show' : ''}`}
-                style={{ animationDelay: `${index * 70}ms` }}
-              >
-                <div
-                  className="list-group-item d-flex justify-content-between bg-white item-row-animation"
-                  onClick={() => toggleExpand(trend._id)}
-                >
-                  <span style={{ flex: 2 }}>{trend.trend_name}</span>
-                  <span style={{ flex: 1 }}>{trend.sentiment}</span>
-                  <span style={{ flex: 1 }}>{trend.volume}</span>
-                  <span style={{ flex: 3 }}>{trend.top_keywords?.join(", ")}</span>
-                </div>
+                  {trendsForDate.map((trend, index) => (
+                    <div
+                      key={trend._id}
+                      className={`list-item-animation ${animateItems ? "show" : ""}`}
+                      style={{ animationDelay: `${index * 70}ms` }}
+                    >
+                      <div
+                        className="list-group-item d-flex justify-content-between bg-white item-row-animation"
+                        onClick={() => toggleExpand(trend._id)}
+                      >
+                        <span style={{ flex: 2 }}>{trend.trend_name}</span>
+                        <span style={{ flex: 1 }}>{trend.sentiment}</span>
+                        <span style={{ flex: 1 }}>{trend.volume}</span>
+                        <span style={{ flex: 3 }}>{trend.top_keywords?.join(", ")}</span>
+                      </div>
 
-                <div
-                  className={`expandable-section ${
-                    expandedTrendId === trend._id ? "expanded" : ""
-                  }`}
-                >
-                  <p>
-                    <strong>Description:</strong>{" "}
-                    {trend.trend_description || "No description available."}
-                  </p>
-                  <p>
-                    <strong>All Keywords:</strong>{" "}
-                    {trend.top_keywords?.join(", ") || "N/A"}
-                  </p>
+                      <div
+                        className={`expandable-section ${
+                          expandedTrendId === trend._id ? "expanded" : ""
+                        }`}
+                      >
+                        <p>
+                          <strong>Description:</strong>{" "}
+                          {trend.trend_description || "No description available."}
+                        </p>
+                        <p>
+                          <strong>All Keywords:</strong>{" "}
+                          {trend.top_keywords?.join(", ") || "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

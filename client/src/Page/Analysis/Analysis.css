@@ -5,7 +5,9 @@
   min-height: 100vh; /* Ensures it takes full viewport height */
 }
 
-  
+  .back-shadow{
+    box-shadow: 0 0.20rem 0.25rem rgb(0 0 0 / 55%) !important;
+  }
   /* Active nav item styling */
   .active-nav-item {
     background-color: #4361ee;
@@ -37,4 +39,7 @@
       position: static !important;
       height: auto !important;
     }
+  }
+  .desc-color{
+    background: rgb(245 246 248 )  !important
   }
