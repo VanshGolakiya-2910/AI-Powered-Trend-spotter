@@ -17,22 +17,23 @@ app.use(morgan("dev")); // Log API requests
 app.use(bodyParser.json()); // Parse JSON bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded requests
 
-// // MongoDB Connection
-// mongoose
-//   .connect(process.env.MONGO_URI, {
-//   })
-//   .then(() => console.log("✅ MongoDB atlas Connected Successfully!"))
-//   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,})
+  .then(() => console.log("✅ MongoDB atlas Connected Successfully!"))
+  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 // MongoDB Connection
-const MONGODB_URI = 'mongodb+srv://DhairyaVaghela:xYQtoQ1yaYTiBJO2@ai-powered-trend-cluste.ja1xbvz.mongodb.net/trendspotter?retryWrites=true&w=majority&appName=AI-Powered-Cluster';
+// const MONGODB_URI = 'mongodb+srv://DhairyaVaghela:xYQtoQ1yaYTiBJO2@ai-powered-trend-cluste.ja1xbvz.mongodb.net/trendspotter?retryWrites=true&w=majority&appName=AI-Powered-Cluster';
 
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB Atlas'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+// mongoose.connect(MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// })
+// .then(() => console.log('✅ Connected to MongoDB Atlas'))
+// .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // Routes
 app.use("/api/trends", trendRoutes); // ⬅️ Mount trend API routes
