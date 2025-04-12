@@ -18,7 +18,7 @@ nlp = spacy.load("en_core_web_sm")
 
 custom_stopwords = set([
     "always", "every", "win", "friend", "love", "like", "good", "day", "time",
-    "people", "best", "make", "feel", "life", "today", "thank", "thanks", "happy",'never','dream','keeping','think','real','matter',"start", "follow", "matter","Tweeting"
+    "people", "best", "make", "feel", "life", "today", "thank", "thanks", "happy",'never','dream','keeping','think','real','matter',"start", "follow", "matter","tweeting","comment","every","folio",'give','joke',"say",
 ])
 def Extract_names(keywords):
     candidates = []
@@ -46,7 +46,7 @@ def Extract_names(keywords):
     
     if candidates:
         return candidates[0]
-    return "Misc"
+    return "Misc"   
 
 def Generate_description(Top_trends):
     # Configure Gemini API
