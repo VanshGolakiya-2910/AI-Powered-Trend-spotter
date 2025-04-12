@@ -238,9 +238,6 @@ function Analysis() {
                 className="form-select bg-dark text-white border-secondary"
               >
                 <option value="twitter">Twitter</option>
-                <option value="reddit">Reddit</option>
-                <option value="instagram">Instagram</option>
-                <option value="all">All Platforms</option>
               </select>
             </div>
           </div>
