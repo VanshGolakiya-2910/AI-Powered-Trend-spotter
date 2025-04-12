@@ -1,45 +1,220 @@
-/* TrendSpotter Custom CSS - only includes styles not available in Bootstrap */
+/* TrendSpotter Custom CSS - now with animations */
 
 .trend-spotter {
   background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-  min-height: 100vh; /* Ensures it takes full viewport height */
+  min-height: 100vh; 
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
 }
 
-  .back-shadow{
-    box-shadow: 0 0.20rem 0.25rem rgb(0 0 0 / 55%) !important;
+.back-shadow {
+  box-shadow: 0 0.20rem 0.25rem rgb(0 0 0 / 55%) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.back-shadow:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.3rem 0.4rem rgb(0 0 0 / 40%) !important;
+}
+
+/* Active nav item styling */
+.active-nav-item {
+  background-color: #4361ee;
+}
+
+.sidebar {
+  transform: translateX(-20px);
+  opacity: 0;
+  animation: slideInLeft 0.6s ease forwards;
+}
+
+.sidebar .nav-item {
+  opacity: 0;
+  transform: translateX(-10px);
+  animation: fadeInLeft 0.5s ease forwards;
+}
+
+.sidebar .nav-item:nth-child(1) { animation-delay: 0.1s; }
+.sidebar .nav-item:nth-child(2) { animation-delay: 0.2s; }
+.sidebar .nav-item:nth-child(3) { animation-delay: 0.3s; }
+.sidebar .nav-item:nth-child(4) { animation-delay: 0.4s; }
+
+.sidebar .nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Icon circles with animations */
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.icon-circle:hover {
+  transform: scale(1.1);
+}
+
+/* Dashboard cards animations */
+.col-xl-3 .card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.col-xl-3:nth-child(1) .card { animation-delay: 0.1s; }
+.col-xl-3:nth-child(2) .card { animation-delay: 0.2s; }
+.col-xl-3:nth-child(3) .card { animation-delay: 0.3s; }
+.col-xl-3:nth-child(4) .card { animation-delay: 0.4s; }
+
+/* Main content sections animations */
+.row.mb-4 .card {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.5s;
+}
+
+/* List items animations */
+.list-group-item {
+  opacity: 0;
+  transform: translateX(20px);
+  animation: slideInRight 0.5s ease forwards;
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  transform: translateX(5px);
+  background-color: #f8f9fa;
+}
+
+.list-group-item:nth-child(1) { animation-delay: 0.1s; }
+.list-group-item:nth-child(2) { animation-delay: 0.2s; }
+.list-group-item:nth-child(3) { animation-delay: 0.3s; }
+.list-group-item:nth-child(4) { animation-delay: 0.4s; }
+.list-group-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* Search bar with animations */
+.search-container {
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards;
+  animation-delay: 0.3s;
+  transition: all 0.3s ease;
+}
+
+.search-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.3rem 0.4rem rgb(0 0 0 / 20%) !important;
+}
+
+.search-container input:focus {
+  box-shadow: none;
+}
+
+/* Keyword cards animations */
+.col-lg-4 .card, .col-md-6 .card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease forwards;
+  transition: all 0.3s ease;
+}
+
+.col-lg-4:nth-child(1) .card, .col-md-6:nth-child(1) .card { animation-delay: 0.1s; }
+.col-lg-4:nth-child(2) .card, .col-md-6:nth-child(2) .card { animation-delay: 0.2s; }
+.col-lg-4:nth-child(3) .card, .col-md-6:nth-child(3) .card { animation-delay: 0.3s; }
+.col-lg-4:nth-child(4) .card, .col-md-6:nth-child(4) .card { animation-delay: 0.4s; }
+.col-lg-4:nth-child(5) .card, .col-md-6:nth-child(5) .card { animation-delay: 0.5s; }
+.col-lg-4:nth-child(6) .card, .col-md-6:nth-child(6) .card { animation-delay: 0.6s; }
+
+.col-lg-4 .card:hover, .col-md-6 .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.3rem 0.4rem rgb(0 0 0 / 20%) !important;
+}
+
+/* Filter buttons animation */
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.2rem 0.3rem rgb(0 0 0 / 20%) !important;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Description container */
+.desc-color {
+  background: rgb(245 246 248) !important;
+  transition: all 0.3s ease;
+}
+
+/* Responsive fixes */
+@media (max-width: 992px) {
+  .sidebar {
+    position: static !important;
+    height: auto !important;
   }
-  /* Active nav item styling */
-  .active-nav-item {
-    background-color: #4361ee;
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .sidebar .nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* Icon circles */
-  .icon-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
   }
-  
-  /* Search bar with no outline when focused */
-  .search-container input:focus {
-    box-shadow: none;
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
-  
-  /* Responsive fixes */
-  @media (max-width: 992px) {
-    .sidebar {
-      position: static !important;
-      height: auto !important;
-    }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
   }
-  .desc-color{
-    background: rgb(245 246 248 )  !important
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(67, 97, 238, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+}

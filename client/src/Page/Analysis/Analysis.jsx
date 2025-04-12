@@ -124,7 +124,6 @@ function Analysis() {
   const usedTrendIds = new Set();
   const sortedTrends = [...trends].sort((a, b) => b.volume - a.volume);
 
-  // Step 2: Extract only one keyword from each trend (top one if available)
   const keywordMap = new Map();
 
   sortedTrends.forEach((trend) => {
@@ -139,7 +138,6 @@ function Analysis() {
     }
   });
 
-  // Step 3: Convert to array and pick top 6 keywords by volume
   const topKeywords = Array.from(keywordMap.entries())
     .sort((a, b) => b[1].volume - a[1].volume)
     .slice(0, 6); // limit to 6

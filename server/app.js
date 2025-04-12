@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
 const trendRoutes = require("./routes/trendRoutes"); // ⬅️ Import trend routes
+const futuretrendsRoutes = require("./routes/futuretrendsRoutes"); // ⬅️ Import future trends routes
 
 const app = express();
 
@@ -35,7 +36,7 @@ mongoose.connect(MONGODB_URI, {
 
 // Routes
 app.use("/api/trends", trendRoutes); // ⬅️ Mount trend API routes
-
+app.use("/api/futuretrends",futuretrendsRoutes ); // ⬅️ Mount trend API routes
 // Default Route
 app.get("/", (req, res) => {
   res.send("Welcome to AI-Powered Trend Spotter API! 🚀");

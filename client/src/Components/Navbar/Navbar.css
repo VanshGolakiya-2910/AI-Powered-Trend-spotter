@@ -1,0 +1,58 @@
+/* Sticky navbar styling with animations */
+.navbar {
+    position: static;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.5s ease forwards;
+  }
+  
+  .navbar-brand {
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards;
+  }
+  
+  .navbar-nav .nav-item {
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeInDown 0.5s ease forwards;
+  }
+  
+  .navbar-nav .nav-item:nth-child(1) { animation-delay: 0.1s; }
+  .navbar-nav .nav-item:nth-child(2) { animation-delay: 0.2s; }
+  .navbar-nav .nav-item:nth-child(3) { animation-delay: 0.3s; }
+  .navbar-nav .nav-item:nth-child(4) { animation-delay: 0.4s; }
+  
+  .nav-link {
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Keyframe animations */
+  @keyframes slideDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
