@@ -37,19 +37,21 @@ redis_connect = redis.Redis(
     decode_responses=True
 )
 
-custom_stop_words = ['trend', 'viral', 'trending', 'post', 'news', 'update','trendingnow','trendingreels','latest','relatable','viralvideo','reel','fyp','us','know','series','business', 'digital', 'online', 'growth', 'market','better', 'things', 'best', 'one', 'zoomed cleavage','youtube', 'written', 'april 2025', '2025 written', 'written episode','github repo', 'github', 'repo', 'web', 'framework','daily', 'like', 'time', 'anna']
+custom_stop_words = ['trend', 'viral', 'trending', 'post', 'news', 'update','trendingnow','trendingreels','latest','relatable','viralvideo','reel','fyp','us','know','series','business', 'digital', 'online', 'growth', 'market','better', 'things', 'best', 'one','youtube', 'written', 'april 2025', '2025 written', 'written episode','github repo', 'github', 'repo', 'web', 'framework','daily', 'like', 'time', 'anna','matter']
 
 
 additional_noise_words = [
 'look', 'take', 'make', 'get', 'see', 'check', 'click', 'life', 'love',
 'watch', 'share', 'amazing', 'awesome', 'today', 'new', 'now', 'live',
 'happening', 'go', 'back', 'day', 'night', 'people', 'thing', 'stuff',
-'guy', 'girl', 'video', 'photo', 'pic', 'story', 'view', 'upload',
+'guy', 'girl', 'video', 'photo', 'pic', 'story', 'view', 'upload','say','test',
 'reels', 'videos', 'likes', 'followers', 'insta', 'snap', 'bio', 'caption','vs','funny','comedy','please','let','details link', 'subscribe', 'via youtube', 'via', 'like subscribe','social', 'media', 'social media', 'brand','read', 'comment', 'tip', 'work', 'need upon','tweeting daily', 'tweeting', 'untill', 'daily untill', 'reply','engagement', 'marketing', 'platforms', 'strategies', 'content','grow','seo', 'strategy', 'engage','instagram','2025', 'april', 'th', 'build','way', 'inspiration', 'art', 'ho',
 ]
 
 
 custom_stop_words += additional_noise_words 
+
+
 
 # Function helps clearing the stop words and noise in the data 
 def find_frequent_useless_keywords(topic_model, threshold=0.6):
@@ -59,6 +61,7 @@ def find_frequent_useless_keywords(topic_model, threshold=0.6):
     return [word for word, freq in counts.items() if freq / total_topics >= threshold]
 
 def Generate_description(visual_df):
+    
     genai.configure(api_key="AIzaSyDV1WIQR-aQotA2Fxxn-mVnu4VDF11vesw")
     model = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -252,7 +255,7 @@ if __name__ == '__main__':
     vector_model = CountVectorizer(
         stop_words=custom_stop_words,
         ngram_range=(1,2),
-        # max_df = 0.85
+        max_df = 0.85
         )
 
     embedding_model = SentenceTransformer('all-MiniLM-L6-v2')

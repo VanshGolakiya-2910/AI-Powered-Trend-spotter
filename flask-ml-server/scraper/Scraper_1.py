@@ -66,23 +66,23 @@ def Scrap_twitter():
     })
     url = 'https://x.com/search?q=(%23trending%20OR%20%20%23socialmedia)%20lang%3Aen%20geocode%3A20.5937%2C78.9629%2C500km&src=typed_query&f=live'
 
-    wait = WebDriverWait(driver,5)
 
     driver.get(url)
     i = 0 
-    desired_tweet_count = 35
+    desired_tweet_count = 150
     non_add_tweet = 0 
-    max_scroll = 250 
+    max_scroll = 300
     screen_height = driver.execute_script('return window.screen.height')
     Titles_list = []
+    unique_tweet_texts = set()
     Meta_data_list = []
     Date_time_list = []
     while non_add_tweet < desired_tweet_count and i < max_scroll: 
         driver.execute_script(f"window.scrollTo(0,{screen_height}*{i})".format(screen_height=screen_height,i=i))
         i = i + 1 
-        time.sleep(1)
+        time.sleep(0.5)
 
-        Full_Tweet_element = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//article[@role='article']")))
+        Full_Tweet_element = driver.find_elements(By.XPATH,"//article[@role='article']")
         for tweet in Full_Tweet_element:
             print(f'----------- For {i} iteration -------------')
             driver.execute_script(f"console.log('{i} iteration');")
@@ -91,7 +91,7 @@ def Scrap_twitter():
                 if tweet_text_element.text.strip() in Titles_list:
                     continue
                 tweet_text = tweet_text_element.text.strip()
-                if tweet_text in [t["Tweets"] for t in Titles_list]:
+                if tweet_text in unique_tweet_texts:
                     continue
 
                 if Ad_filter(tweet_text):
@@ -137,13 +137,6 @@ if __name__ == '__main__':
     Title,Meta_data,Date_array = Scrap_twitter()
 
 
-    # Hash_list = Hastag_fetcher(Title)
-
-    # likes = [meta.get('likes', 0) for meta in Meta_data]
-    # views = [meta.get('views', 0) for meta in Meta_data]
-    # print(f'Length of HasTag array :{len(Hash_list)}')
-
-
     print(f'Length of Tweets array : {len(Title)}')
     print(f'Length of Meta Data array : {len(Meta_data)}')
     print(f'Length of Date time array : {len(Date_array)}')
@@ -157,8 +150,7 @@ if __name__ == '__main__':
 
     print('---------------Data saved Succesfully-----------------')
     data_json = df.to_json(orient='records')
-    for row in df.to_dict(orient='records'):
-        redis_client.lpush("Testing_Scraped",json.dumps(row))
+    redis_client.lpush("Testing_Scraped", *[json.dumps(row) for row in df.to_dict(orient='records')])
 
     print('---------------Data Storage to redis Succesfully-----------------')
 

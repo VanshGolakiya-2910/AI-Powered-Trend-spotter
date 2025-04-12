@@ -12,7 +12,41 @@ from pymongo.errors import DuplicateKeyError
 from datetime import datetime
 import google.generativeai as genai
 import time
+import re
+import spacy
+nlp = spacy.load("en_core_web_sm")
 
+custom_stopwords = set([
+    "always", "every", "win", "friend", "love", "like", "good", "day", "time",
+    "people", "best", "make", "feel", "life", "today", "thank", "thanks", "happy",'never','dream','keeping','think','real','matter',"start", "follow", "matter","Tweeting"
+])
+def Extract_names(keywords):
+    candidates = []
+    
+    doc = nlp(" ".join(keywords))
+    entities = {ent.text.strip() for ent in doc.ents if ent.label_ in ("PERSON", "ORG", "GPE", "EVENT")}
+    
+    # Use entities if available
+    for ent in entities:
+        if ent.lower() not in custom_stopwords and len(ent) >= 4:
+            candidates.append(ent)
+            
+    # Fallback: use the previous strict filtering over individual keywords
+    if not candidates:
+        for kw in keywords:
+            kw_clean = kw.strip()
+            if len(kw_clean) < 5:
+                continue
+            if kw_clean.lower() in custom_stopwords:
+                continue
+            if kw_clean.startswith('#') and len(kw_clean) > 4:
+                candidates.append(kw_clean)
+            elif re.match(r'^[A-Za-z0-9_]+$', kw_clean) and len(kw_clean) > 4:
+                candidates.append(kw_clean)
+    
+    if candidates:
+        return candidates[0]
+    return "Misc"
 
 def Generate_description(Top_trends):
     # Configure Gemini API
@@ -27,7 +61,7 @@ def Generate_description(Top_trends):
             f"The description should feel natural, engaging, and summarize the core theme in 1-2 sentences."
         )
         try:
-            time.sleep(2)  # Reduced sleep to 2s (enough for most safe-rate scenarios)
+            time.sleep(2) 
             response = model.generate_content(prompt)
             descriptions.append(response.text.strip() if response.text else "No description generated.")
         except Exception as e:
@@ -49,12 +83,6 @@ def Preprocessing_features(df):
     keyword_count = Counter(all_keywords)
 
     top_keywords = {kw for kw, _ in keyword_count.most_common(30)}
-
-    def Extract_names(keywords):
-        for kw in keywords:
-            if kw in top_keywords:
-                return kw 
-        return "Misc"
 
     df['trend_name'] = df['Keywords'].apply(Extract_names)
     return df 
@@ -128,9 +156,12 @@ if __name__ == '__main__':
     results = list(zip(testing_df, Preds))
     trending = [trend[0] for trend in results if trend[1] == 1]
     filtered = [t for t in trending if t != 'Misc']
-    top_trends = Counter(filtered).most_common(5)
-    print(top_trends)
-    trend_names = [i for i, _ in top_trends]
+    trend_counter = Counter(filtered)
+    # Only pick trends that have frequency >= a threshold (say, 3)
+    top_trends = [(trend, freq) for trend, freq in trend_counter.items() if freq >= 3]
+    top_trends = sorted(top_trends, key=lambda x: x[1], reverse=True)[:5]
+    print("Top trends (after filtering):", top_trends)
+    trend_names = [trend for trend, _ in top_trends]
 
     # Generate descriptions
     descriptions = Generate_description(trend_names)
@@ -154,9 +185,6 @@ if __name__ == '__main__':
         db = client['trendspotter']
         collection = db['Future_Trends']
 
-        # Optional: Enforce unique index
-        # collection.create_index("trend_name", unique=True)
-
         inserted_count = 0
         for name, desc in zip(trend_names, descriptions):
             doc = {
@@ -169,7 +197,7 @@ if __name__ == '__main__':
         
                 result = collection.delete_one({"trend_name": name})
                 if result.deleted_count > 0:
-                    print(f"[INFO] Deleted duplicate for trend: {name}")
+                    print(f"Deleted duplicate for trend: {name}")
 
                 # Insert new document
                 collection.insert_one(doc)
