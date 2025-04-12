@@ -55,3 +55,8 @@ Here's how the AI-Powered Trend Spotter system operates behind the scenes:
 
 ✨ The combination of **real-time scraping**, **advanced NLP**, and **predictive analytics** makes this system a powerful tool for tracking and forecasting social media trends.
 
+**Team Member and their roles**
+1. Dhairya Vaghela - AI/ML Developer
+2. Vansh Golakiya - Full stack Developer
+3. Manthan Lad - AI/ML Developer
+4. Manendra Jadeja - ML Developer and Project Manager
