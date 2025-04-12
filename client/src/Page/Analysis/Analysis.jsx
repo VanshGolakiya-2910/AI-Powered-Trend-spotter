@@ -154,6 +154,7 @@ function Analysis() {
       }
     });
   });
+  const timeLabel = timeFilter === "latest" ? "Live" : "Last 7 Days";
 
   //scroll ref
   const scrollToRef = (ref) => {
@@ -280,7 +281,7 @@ function Analysis() {
                       {loading ? "Loading..." : totalTrends}
                     </div>
                     <div className="text-success d-flex align-items-center small">
-                      <i className="fas fa-arrow-up me-1"></i> Live Count
+                       {timeLabel} Count
                     </div>
                   </div>
                 </div>
@@ -301,7 +302,7 @@ function Analysis() {
                       {getPercent("Positive") + "%"}
                     </div>
                     <div className="text-success d-flex align-items-center small">
-                      <i className="fas fa-arrow-up me-1"></i> Today
+                       {timeLabel} stats
                     </div>
                   </div>
                 </div>
@@ -319,8 +320,8 @@ function Analysis() {
                       </div>
                     </div>
                     <div className="fs-3 fw-bold mb-1">{totalVolume}</div>
-                    <div className="text-danger d-flex align-items-center small">
-                      <i className="fas fa-arrow-down me-1"></i> Live Stats
+                    <div className="text-success d-flex align-items-center small">
+                    {timeLabel} Stats
                     </div>
                   </div>
                 </div>
@@ -341,7 +342,7 @@ function Analysis() {
                       {getPercent("Neutral") + "%"}
                     </div>
                     <div className="text-success d-flex align-items-center small">
-                      <i className="fas fa-arrow-up me-1"></i> Live Stats
+                      {timeLabel} Stats
                     </div>
                   </div>
                 </div>

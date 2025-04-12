@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../Components/Navbar/Navbar";
-// import "./Explore.css";
-// 
+
 function Explore() {
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +52,30 @@ function Explore() {
     fetchAllTrends();
   }, []);
 
-  // Group trends by date and sort each group by alphabetical order of trend name
+  // Format relative time (e.g., "5 minutes ago")
+  const getRelativeTime = (timestamp) => {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diff = Math.floor((now - past) / 1000); // in seconds
+
+    const units = [
+      { label: "year", seconds: 31536000 },
+      { label: "month", seconds: 2592000 },
+      { label: "day", seconds: 86400 },
+      { label: "hour", seconds: 3600 },
+      { label: "minute", seconds: 60 },
+      { label: "second", seconds: 1 },
+    ];
+
+    for (let unit of units) {
+      const value = Math.floor(diff / unit.seconds);
+      if (value > 0) return `Predicted ${value} ${unit.label}${value > 1 ? "s" : ""} ago`;
+    }
+
+    return "Predicted just now";
+  };
+
+  // Group trends by date
   const groupedByDate = trends.reduce((acc, trend) => {
     const dateStr = new Date(trend.timestamp).toLocaleDateString();
     if (!acc[dateStr]) acc[dateStr] = [];
@@ -61,6 +83,7 @@ function Explore() {
     return acc;
   }, {});
 
+  // Sort dates (latest first)
   const sortedDateKeys = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
 
   return (
@@ -96,8 +119,8 @@ function Explore() {
         ) : (
           <div className="list-group list-animation">
             {sortedDateKeys.map((date, idx) => {
-              const trendsForDate = groupedByDate[date].sort((a, b) =>
-                a.trend_name.localeCompare(b.trend_name)
+              const trendsForDate = groupedByDate[date].sort(
+                (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
               );
               return (
                 <div key={idx}>
@@ -140,9 +163,9 @@ function Explore() {
                         <p>
                           <strong>Full Description:</strong> {trend.description}
                         </p>
-                        <p>
-                          <strong>Predicted For:</strong>{" "}
-                          {new Date(trend.timestamp).toLocaleString()}
+                        <p className="text-muted small fst-italic">
+                          {getRelativeTime(trend.timestamp)} (
+                          {new Date(trend.timestamp).toLocaleString()})
                         </p>
                       </div>
                     </div>
