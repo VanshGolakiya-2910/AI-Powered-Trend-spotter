@@ -70,7 +70,7 @@ def Scrap_twitter():
 
     driver.get(url)
     i = 0 
-    desired_tweet_count = 50
+    desired_tweet_count = 35
     non_add_tweet = 0 
     max_scroll = 250 
     screen_height = driver.execute_script('return window.screen.height')
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     print('---------------Data saved Succesfully-----------------')
     data_json = df.to_json(orient='records')
     for row in df.to_dict(orient='records'):
-        redis_client.lpush("Scraped_data",json.dumps(row))
+        redis_client.lpush("Testing_Scraped",json.dumps(row))
 
     print('---------------Data Storage to redis Succesfully-----------------')
 

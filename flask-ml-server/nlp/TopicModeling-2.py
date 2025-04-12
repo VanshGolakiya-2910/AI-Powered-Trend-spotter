@@ -233,7 +233,7 @@ if __name__ == '__main__':
     start_time = datetime.now()
     # Loading the Data from redis 
     print('-------------Fetching data from Redis server-----------')
-    json_data = redis_connect.lrange(name='Scraped_data',start=0,end=-1)
+    json_data = redis_connect.lrange(name='Testing_Scraped',start=0,end=-1)
     data = []
     for i, item in enumerate(json_data):
         try:
@@ -252,7 +252,7 @@ if __name__ == '__main__':
     vector_model = CountVectorizer(
         stop_words=custom_stop_words,
         ngram_range=(1,2),
-        max_df = 0.85
+        # max_df = 0.85
         )
 
     embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -306,7 +306,7 @@ if __name__ == '__main__':
         db = client['trendspotter']
         collection = db['Current_Trend']
 
-        collection.create_index("Tweets", unique=True)
+        # collection.create_index("Tweets", unique=True)
 
         new_trend = visual_df.to_dict(orient="records")
 
@@ -326,12 +326,9 @@ if __name__ == '__main__':
 
     data_json = df.to_json(orient='records')
     for data in df.to_dict(orient='records'):
-        redis_connect.lpush('Future_prediction_data', json.dumps(data)) 
+        redis_connect.lpush('Testing_data', json.dumps(data)) 
     
     print('----------Data Successfully stored on Redis server---------')
     end_time = datetime.now()
     print(f'time taken to run the script {end_time-start_time}')
     df.to_csv('try.csv')
-
-    
-    
