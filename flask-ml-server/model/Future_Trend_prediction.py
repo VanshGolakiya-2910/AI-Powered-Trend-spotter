@@ -18,7 +18,7 @@ nlp = spacy.load("en_core_web_sm")
 
 custom_stopwords = set([
     "always", "every", "win", "friend", "love", "like", "good", "day", "time",
-    "people", "best", "make", "feel", "life", "today", "thank", "thanks", "happy",'never','dream','keeping','think','real','matter',"start", "follow", "matter","tweeting","comment","every","folio",'give','joke',"say",
+    "people", "best", "make", "feel", "life", "today", "thank", "thanks", "happy","never","dream","keeping","think","real","matter","start", "follow", "matter","tweeting","comment","every","folio","give","joke","say",
 ])
 def Extract_names(keywords):
     candidates = []
@@ -26,12 +26,10 @@ def Extract_names(keywords):
     doc = nlp(" ".join(keywords))
     entities = {ent.text.strip() for ent in doc.ents if ent.label_ in ("PERSON", "ORG", "GPE", "EVENT")}
     
-    # Use entities if available
     for ent in entities:
         if ent.lower() not in custom_stopwords and len(ent) >= 4:
             candidates.append(ent)
             
-    # Fallback: use the previous strict filtering over individual keywords
     if not candidates:
         for kw in keywords:
             kw_clean = kw.strip()
@@ -49,7 +47,6 @@ def Extract_names(keywords):
     return "Misc"   
 
 def Generate_description(Top_trends):
-    # Configure Gemini API
     genai.configure(api_key="AIzaSyDV1WIQR-aQotA2Fxxn-mVnu4VDF11vesw")
     model = genai.GenerativeModel('gemini-1.5-flash')
 
